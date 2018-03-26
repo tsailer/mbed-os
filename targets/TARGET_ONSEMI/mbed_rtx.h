@@ -17,7 +17,7 @@
 #ifndef MBED_MBED_RTX_H
 #define MBED_MBED_RTX_H
 
-#if defined(TARGET_NCS36510)
+#if defined(TARGET_NCS36510_MCU)
 
 #ifndef INITIAL_SP
 #define INITIAL_SP              (0x40000000UL)
