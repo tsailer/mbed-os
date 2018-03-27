@@ -33,11 +33,6 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="--verbose" />
-			<Add option="-mcpu=cortex-m0plus" />
-			<Add option="-mthumb" />
-			<Add option="-Wall" />
-			<Add option="-fno-common" />
 			{%  for f in comp_flags -%}
 			<Add option="{{f}}" />
 			{%  endfor -%}
