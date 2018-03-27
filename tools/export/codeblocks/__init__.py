@@ -37,12 +37,6 @@ class CodeBlocks(GccArm):
         "NCS36510TargetCode.ncs36510_addfib"
     ])
 
-    @classmethod
-    def is_target_supported(cls, target_name):
-        target = TARGET_MAP[target_name]
-        return apply_supported_whitelist(
-            cls.TOOLCHAIN, cls.POST_BINARY_WHITELIST, target)
-
     @staticmethod
     def filter_dot(str_in):
         """
@@ -81,10 +75,11 @@ class CodeBlocks(GccArm):
         inc_dirs = [x for x in inc_dirs if x is not None and x != '' and x != '.' and not x.startswith('bin') and not x.startswith('obj')];
 
         c_sources = [self.filter_dot(s) for s in self.resources.c_sources]
-        ncs36510fib = hasattr(target, "post_binary_hook") and getattr(target, "post_binary_hook") == 'NCS36510TargetCode.ncs36510_addfib'
+        targ = TARGET_MAP[self.target]
+        ncs36510fib = hasattr(targ, 'post_binary_hook') and targ.post_binary_hook['function'] == 'NCS36510TargetCode.ncs36510_addfib'
         if ncs36510fib:
-            c_soures.append('ncs36510fib.c')
-            c_soures.append('ncs36510trim.c')
+            c_sources.append('ncs36510fib.c')
+            c_sources.append('ncs36510trim.c')
 
         ctx = {
             'project_name': self.project_name,
@@ -102,18 +97,33 @@ class CodeBlocks(GccArm):
 
         self.gen_file('codeblocks/cbp.tmpl', ctx, "%s.%s" % (self.project_name, 'cbp'))
         if ncs36510fib:
+            ctx = {
+                'mac_addr_low': 0xFFFFFFFF,
+                'mac_addr_high': 0xFFFFFFFF,
+                'clk_32k_trim': 0x39,
+                'clk_32m_trim': 0x17,
+                'rssi': 0x3D,
+                'txtune': 0xFFFFFFFF
+            }
+            if hasattr(targ, 'config'):
+                print targ.config
+                for an, cn in [ ['mac-addr-low', 'mac_addr_low'], ['mac-addr-high', 'mac_addr_high'],
+                                ['32KHz-clk-trim', 'clk_32k_trim'], ['32MHz-clk-trim', 'clk_32m_trim'],
+                                ['rssi-trim', 'rssi'], ['txtune-trim', 'txtune'] ]:
+                    if an in targ.config:
+                        if 'value' in targ.config[an]:
+                            ctx[cn] = int(targ.config[an]['value'], 0)           
             for f in [ 'ncs36510fib.c', 'ncs36510trim.c' ]:
                 self.gen_file("codeblocks/%s" % f, ctx, f)
 
-        # finally, generate the Makefile
+        # finally, generate the project file
         super(CodeBlocks, self).generate()
 
     @staticmethod
     def clean(project_name):
         for ext in ['cbp', 'depend', 'layout']:
             remove("%s.%s" % (project_name, ext))
-        remove('openocd.log')
-        remove('ncs36510fib.c')
-        remove('ncs36510trim.c')
-        rmtree('bin', ignore_errors=True)
-        rmtree('obj', ignore_errors=True)
+        for f in ['openocd.log', 'ncs36510fib.c', 'ncs36510trim.c']:
+            remove(f)
+        for d in ['bin', 'obj']:
+            rmtree(d, ignore_errors=True)

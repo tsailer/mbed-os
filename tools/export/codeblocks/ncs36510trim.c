@@ -11,12 +11,12 @@ struct ncs36510fib {
 };
 
 static struct ncs36510fib __attribute__((section(".trim"))) ncs36510fib = {
-	0xFFFFFFFF,
-	0xFFFFFFFF,
-	0x39,
-	0x17,
-	0x3D,
-	0xFFFFFFFF,
+	{{"0x{:08x}".format(mac_addr_low)}},
+	{{"0x{:08x}".format(mac_addr_high)}},
+	{{"0x{:08x}".format(clk_32k_trim)}},
+	{{"0x{:08x}".format(clk_32m_trim)}},
+	{{"0x{:08x}".format(rssi)}},
+	{{"0x{:08x}".format(txtune)}},
 	{
 		0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
 		0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
