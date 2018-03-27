@@ -10,7 +10,7 @@ struct ncs36510fib {
 	uint32_t fill[506];
 };
 
-static struct ncs36510fib __attribute__((section(".trim"))) ncs36510fib = {
+static struct ncs36510fib __attribute__((section(".trim,\"a\",%progbits@"), unused)) ncs36510fib = {
 	{{"0x{:08x}".format(mac_addr_low)}},
 	{{"0x{:08x}".format(mac_addr_high)}},
 	{{"0x{:08x}".format(clk_32k_trim)}},

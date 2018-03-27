@@ -92,7 +92,8 @@ class CodeBlocks(GccArm):
             'cpp_sources': [self.filter_dot(s) for s in self.resources.cpp_sources],
             'include_paths': inc_dirs,
             'linker_script': self.filter_dot(self.resources.linker_script),
-            'libraries': self.resources.libraries
+            'libraries': self.resources.libraries,
+            'ncs36510addfib': ncs36510fib
             }
 
         self.gen_file('codeblocks/cbp.tmpl', ctx, "%s.%s" % (self.project_name, 'cbp'))
@@ -106,7 +107,6 @@ class CodeBlocks(GccArm):
                 'txtune': 0xFFFFFFFF
             }
             if hasattr(targ, 'config'):
-                print targ.config
                 for an, cn in [ ['mac-addr-low', 'mac_addr_low'], ['mac-addr-high', 'mac_addr_high'],
                                 ['32KHz-clk-trim', 'clk_32k_trim'], ['32MHz-clk-trim', 'clk_32m_trim'],
                                 ['rssi-trim', 'rssi'], ['txtune-trim', 'txtune'] ]:
