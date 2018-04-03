@@ -755,9 +755,13 @@ class mbedToolchain:
             resources.lib_dirs.add(dirname(file_path))
 
         elif ext == self.LINKER_EXT:
+            #if resources.linker_script is not None:
+            #    self.info("Warning: Multiple linker scripts detected: %s -> %s" % (resources.linker_script, file_path))
+            #resources.linker_script = file_path
             if resources.linker_script is not None:
-                self.info("Warning: Multiple linker scripts detected: %s -> %s" % (resources.linker_script, file_path))
-            resources.linker_script = file_path
+                self.info("Warning: Multiple linker scripts detected: %s, ignoring %s" % (resources.linker_script, file_path))
+            else:
+                resources.linker_script = file_path
 
         elif ext == '.lib':
             resources.lib_refs.append(file_path)
