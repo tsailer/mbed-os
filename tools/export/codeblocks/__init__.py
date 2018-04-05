@@ -66,6 +66,7 @@ class CodeBlocks(GccArm):
 
         comp_flags = []
         debug_flags = []
+        release_flags = [ '-Os', '-g1' ]
         next_is_include = False
         for f in self.flags['c_flags'] + self.flags['cxx_flags'] + self.flags['common_flags']:
             f = f.strip()
@@ -102,6 +103,7 @@ class CodeBlocks(GccArm):
         ctx = {
             'project_name': self.project_name,
             'debug_flags': debug_flags,
+            'release_flags': release_flags,
             'comp_flags': comp_flags,
             'ld_flags': self.flags['ld_flags'],
             'headers': sorted(list(set([self.filter_dot(s) for s in self.resources.headers]))),
@@ -140,9 +142,23 @@ class CodeBlocks(GccArm):
         self.gen_file('codeblocks/cbp.tmpl', ctx, "%s.%s" % (self.project_name, 'cbp'))
 
         if ncs36510fib:
-            for f in [ 'ncs36510fib.c', 'ncs36510trim.c' ]:
+            genaddfiles = [ 'ncs36510fib.c', 'ncs36510trim.c' ]
+            for f in genaddfiles:
                 copyfile(os.path.join(dirname(abspath(__file__)), f),
                          self.gen_file_dest(f))
+            ignorefiles = genaddfiles
+            try:
+                with open(self.gen_file_dest('.mbedignore'), 'r') as f:
+                    l = set(map(lambda x: x.strip(), f.readlines()))
+                    ignorefiles = [x for x in genaddfiles if x not in l]
+            except IOError as e:
+                pass
+            except:
+                raise
+            if ignorefiles:
+                with open(self.gen_file_dest('.mbedignore'), 'a') as f:
+                    for fi in ignorefiles:
+                        f.write("%s\n" % fi)                
 
         # finally, generate the project file
         super(CodeBlocks, self).generate()
