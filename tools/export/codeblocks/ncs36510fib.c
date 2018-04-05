@@ -14,7 +14,7 @@ struct ncs36510fib {
 	uint32_t fill[502];
 };
 
-static struct ncs36510fib __attribute__((section(".fib,\"a\",%progbits@"), unused)) ncs36510fib = {
+static struct ncs36510fib __attribute__((section(".fib,\"a\",%progbits@"), used)) ncs36510fib = {
 	0x3FFFFC00,
 	0x00003625,
 	0x00003761,

@@ -11,7 +11,7 @@ struct ncs36510fib {
 	uint32_t fill[506];
 };
 
-static struct ncs36510fib __attribute__((section(".trim,\"a\",%progbits@"), unused)) ncs36510fib = {
+static struct ncs36510fib __attribute__((section(".trim,\"a\",%progbits@"), used)) ncs36510fib = {
 	MBED_CONF_TARGET_MAC_ADDR_LOW,
 	MBED_CONF_TARGET_MAC_ADDR_HIGH,
 	MBED_CONF_TARGET_32KHZ_CLK_TRIM,
